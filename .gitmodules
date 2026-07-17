@@ -1,0 +1,9 @@
+[submodule "backend_routeit"]
+	path = backend_routeit
+	url = https://github.com/Xerass/RouteIt-Backend.git
+[submodule "rate_limiter"]
+	path = rate_limiter
+	url = https://github.com/Xerass/RouteIt_Proxy.git
+[submodule "routeit"]
+	path = routeit
+	url = https://github.com/Xerass/RouteIt-Frontend.git
