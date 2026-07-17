@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: datatime
+      POSTGRES_DB: RoadNetworks
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d RoadNetworks"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend_routeit
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:datatime@db:5432/RoadNetworks
+    depends_on:
+      db:
+        condition: service_healthy
+
+  gateway:
+    build: ./rate_limiter
+    environment:
+      BACKEND_URL: http://backend:5000
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+
+  frontend:
+    build:
+      context: ./routeit
+      args:
+        NEXT_PUBLIC_API_BASE: http://localhost:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - gateway
+
+volumes:
+  pgdata:
